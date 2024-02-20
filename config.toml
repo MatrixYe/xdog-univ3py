@@ -1,0 +1,30 @@
+title = "uniswap v3 sync&parse"
+
+#区块网络
+network = "ethereum"
+
+#uniswap v3 factory地址
+factory = "0x1f98431c8ad98523631ae4a59f267346ea31f984"
+
+#uniswap v3 weth 地址
+weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+
+#节点url
+node_url = "https://mainnet.infura.io/v3/5ccc762acf5d49fbbff262865d3f70f6"
+full_pair = true
+skip_history = true
+
+start_block = 0
+sync_interval = 7
+
+[mongo]
+host = "localhost"
+port = 5004
+username = "root"
+password = "password"
+
+[redis]
+host = "localhost"
+port = 5005
+password = "password"
+db = 0
