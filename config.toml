@@ -15,7 +15,7 @@ full_pair = true
 skip_history = true
 
 start_block = 0
-sync_interval = 7
+sync_interval = 6
 
 [mongo]
 host = "localhost"

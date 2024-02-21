@@ -44,6 +44,14 @@ class Config(BaseModel):
     def format_json(self) -> str:
         return json.dumps(json.loads(self.json()), indent=4)
 
+    def to_json(self):
+        return json.loads(self.json())
+
+    def check(self) -> bool:
+        # return self.network and self.factory and self.weth and self.node_url and self.sync_interval
+        return True
+        pass
+
 
 def load_config(file_path: str) -> Config:
     try:
