@@ -31,7 +31,6 @@ class Config(BaseModel):
     network: str
     factory: str
     weth: str
-    full_pair: bool
     skip_history: bool
 
     node_url: HttpUrl
@@ -46,11 +45,6 @@ class Config(BaseModel):
 
     def to_json(self):
         return json.loads(self.json())
-
-    def check(self) -> bool:
-        # return self.network and self.factory and self.weth and self.node_url and self.sync_interval
-        return True
-        pass
 
 
 def load_config(file_path: str) -> Config:
