@@ -225,7 +225,7 @@ class Task:
         })
         for log in logs:
             tx_hash = log.get("transactionHash").hex()
-            contract_addr = log.get('address').lower()
+            contract_addr = log.get('address').lower()  # 发送event的合约地址
             # 优先判断是否来自factory的event
             if contract_addr == self.conf.factory.lower():
                 tx = self._fetch_tx(tx_hash)
@@ -233,13 +233,13 @@ class Task:
                     continue
                 self._handle_factory_event(ts, tx, log)
                 continue
-            # # 判断是否来自pool的event
+            # 判断是否来自pool的event 暂时不开启
             # pool_obj = self._get_pool(contract_addr)
             # if pool_obj:
             #     tx = self._fetch_tx(tx_hash)
             #     if not tx:
             #         continue
-            #     # self._handle_pool_event(ts, tx, log, pool_obj)
+            #     self._handle_pool_event(ts, tx, log, pool_obj)
             #     continue
 
     # 获取tx数据，从本地缓存先取，取不到从链上取
@@ -319,7 +319,7 @@ class Task:
             # todo 补充topic
             case '':
                 event_name = "Swap"
-                # lg.info(f"find event Pair:{event_name}")
+                lg.info(f"find event UniswapV3Pool:{event_name}")
                 self._handle_pool_event_swap(ts, tx, log, pool_obj, event_name)
             case _:
                 pass
@@ -328,6 +328,7 @@ class Task:
     def _get_pool(self, addr: str):
         return self.db[UNIV3_POOLS].find_one({'_id': addr.lower()})
 
+    # 处理factory合约event
     def _handle_factory_event_poolcreated(self, ts: int, tx: dict, log, event_name):
         #     event PoolCreated(
         #         address indexed token0,
@@ -353,6 +354,7 @@ class Task:
             'tickSpacing': tickSpacing,
             'pool': pool}
         event['entity'] = entity
+        event['name'] = event_name
 
         # 忽略锚定币非weth的交易池
         if self.conf.weth not in [token0.lower(), token1.lower()]:
@@ -412,9 +414,18 @@ class Task:
         self._find_and_set(UNIV3_POOLS, {'_id': pool.lower()}, new_pool_data, upsert=True)
         # todo 往redis中推送新池子创建信息
 
+    # 处理event：PoolCreated
     def _handle_pool_event_swap(self, ts, tx, log, pool_obj, event_name):
         # todo 修改方名和解析数据
-        # ndex_topic_1 address sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, index_topic_2 address to
+        #     event Swap(
+        #         address indexed sender,
+        #         address indexed recipient,
+        #         int256 amount0,
+        #         int256 amount1,
+        #         uint160 sqrtPriceX96,
+        #         uint128 liquidity,
+        #         int24 tick
+        #     );
         event = self._parse_com(log)
         topics = log.get("topics")
         sender = abi.decode(['address'], topics[1])[0]
@@ -522,5 +533,5 @@ class Task:
 
 if __name__ == '__main__':
     lg.info("start run application,good luck!")
-    # Task().run()
-    Task().test(19281308)
+    Task().run()
+    # Task().test(19281308)
