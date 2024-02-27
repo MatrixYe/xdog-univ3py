@@ -15,6 +15,7 @@ from pymongo import MongoClient
 from redis import StrictRedis
 from web3 import Web3, HTTPProvider
 from web3.contract import Contract
+from web3.types import BlockData
 
 from config import load_config, Config
 
@@ -211,13 +212,24 @@ class Task:
             # scan block x < h < y+1
             for i in range(x + 1, y + 1):
                 lg.debug(f"_loop:to scan block {i}")
-                self._to_scan_block(i)
+                ok = self._to_scan_block(i)
+                if not ok:
+                    break
                 self._set_sync_block(i)
                 time.sleep(0.2)
 
-    def _to_scan_block(self, i: int):
+    def _get_block(self, i: int) -> BlockData | None:
+        try:
+            return self.w3.eth.get_block(i)
+        except Exception as e:
+            lg.error(e)
+            return None
+
+    def _to_scan_block(self, i: int) -> bool:
         lg.info(f'to scan block:{i}')
-        block = self.w3.eth.get_block(i)
+        block = self._get_block(i)
+        if block is None:
+            return False
         ts = block['timestamp']
         logs = self.w3.eth.get_logs(filter_params={
             'fromBlock': i,
@@ -241,6 +253,7 @@ class Task:
             #         continue
             #     self._handle_pool_event(ts, tx, log, pool_obj)
             #     continue
+        return True
 
     # 获取tx数据，从本地缓存先取，取不到从链上取
     # noinspection PyTypeChecker

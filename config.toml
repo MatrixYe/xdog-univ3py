@@ -14,7 +14,7 @@ node_url = "https://mainnet.infura.io/v3/5ccc762acf5d49fbbff262865d3f70f6"
 skip_history = false
 
 start_block = 19309000
-sync_interval = 8
+sync_interval = 10
 
 [mongo]
 host = "localhost"
