@@ -1,0 +1,29 @@
+title = "uniswap v3 sync&parse"
+
+#区块网络
+network = "coinbase"
+
+#uniswap v3 factory地址
+factory = "0x33128a8fC17869897dcE68Ed026d694621f6FDfD"
+
+#uniswap v3 weth 地址
+weth = "0x4200000000000000000000000000000000000006"
+
+#节点url
+node_url = 'https://base-mainnet.g.alchemy.com/v2/mVtJ9Hcct_VERTMpYnoaRXJPfM6mTpnc'
+skip_history = false
+
+start_block = 12278286
+sync_interval = 2
+
+[mongo]
+host = "localhost"
+port = 5004
+username = "root"
+password = "password"
+
+[redis]
+host = "localhost"
+port = 5005
+password = "password"
+db = 0

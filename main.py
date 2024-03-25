@@ -5,6 +5,7 @@
 # Date:         2021/10/22 2:44 下午
 # Description: 
 # -------------------------------------------------------------------------------
+import argparse
 import json
 import logging
 import time
@@ -18,6 +19,10 @@ from web3.contract import Contract
 from web3.types import BlockData
 
 from config import load_config, Config
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("--config", "-c", type=str)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 lg = logging.getLogger(__name__)
@@ -36,8 +41,8 @@ class Task:
 
     """
 
-    def __init__(self):
-        self.conf: Config = self._load_config()  # 加载配置文件
+    def __init__(self, config_path: str):
+        self.conf: Config = self._load_config(config_path)  # 加载配置文件
         self._factory_abi = self._read_factory_abi()  # 读取factory合约abi
         self._pool_abi = self._read_pool_abi()  # 读取pool合约abi
         self._erc20_abi = self._read_erc20_abi()  # 读取erc20合约abi
@@ -545,6 +550,12 @@ class Task:
 
 
 if __name__ == '__main__':
-    lg.info("start run application,good luck!")
-    Task().run()
-    # Task().test(19281308)
+    lg.info("start to sync uniswap v3,good luck ... ...")
+    args = parser.parse_args()
+    cpath: str = args.config
+    if not cpath:
+        lg.error("pleace input config path,eg:'python mian.py -c config.toml' ")
+        exit(500)
+    print(cpath)
+    task = Task(cpath)
+    task.run()
